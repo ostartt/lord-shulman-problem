@@ -60,7 +60,7 @@ class OSRecurrentSchemeLS:
                 self.total_matrix[4 * i, 4 * j + 3] = 0
 
                 self.total_matrix[4 * i + 1, 4 * j] = self.u_scale * self.p_scale * (
-                            self.dt * gamma * self.problem.E[i, j])
+                        self.dt * gamma * self.problem.E[i, j])
                 self.total_matrix[4 * i + 1, 4 * j + 1] = (self.p_scale * self.p_scale *
                                                            (self.problem.CHI[i, j]
                                                             + self.dt * gamma * self.problem.Z[i, j]))
@@ -106,7 +106,7 @@ class OSRecurrentSchemeLS:
                                                          + self.problem.approximation.get_phi_der()[1] * self.U[
                                                              i + 1, j])
                         - 0.5 * self.problem.c * self.problem.alpha * self.theta_scale * (
-                                    self.Theta[i, j] + self.Theta[i + 1, j])
+                                self.Theta[i, j] + self.Theta[i + 1, j])
                         + self.p_scale * self.problem.e *
                         (self.problem.approximation.get_phi_der()[0] * self.P[i, j]
                          + self.problem.approximation.get_phi_der()[1] * self.P[i + 1, j]))
@@ -158,7 +158,7 @@ class OSRecurrentSchemeLS:
             total_F[4 * j + 3] = self.q_scale * F_q[j]
         return total_F
 
-    def _calculate_predictors_for_time_step(self, i):
+    def _calculate_next_nodal_values_for_time_step(self, i):
         self.U[:, i] = self.U[:, i - 1] + self.dt * self.U_dot[:, i - 1] \
                        + (0.5 * self.dt ** 2) * self.U_dot_dot[:, i - 1]
         self.U_dot[:, i] = self.U_dot[:, i - 1] + self.dt * self.U_dot_dot[:, i - 1]
@@ -169,7 +169,7 @@ class OSRecurrentSchemeLS:
     def perform_os_recurrent_scheme(self):
         self._apply_initial_conditions()
         for i in range(1, self.nt + 1):
-            self._calculate_predictors_for_time_step(i)
+            self._calculate_next_nodal_values_for_time_step(i)
 
             total_F = self._total_effective_force_for_time_step(i)
             total_result = solve_banded((7, 7), self.banded_matrix, total_F)
